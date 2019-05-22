@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketGet
+	public class Ticket
 	{
 		[JsonProperty("id")]
 		public long Id { get; set; }

@@ -1,6 +1,10 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http;
+using System.Threading.Tasks;
+using System.Web;
+using AsyncEnumerable;
 using Refit;
 using Shy.Redmine.Dto;
 
@@ -11,59 +15,122 @@ namespace Shy.Redmine
 		private readonly IRedmineApiClient _apiClient;
 		public string ApiKey { get; }
 
-		public RedmineClient(string baseUri, string apiKey)
+		public RedmineClient(string baseUri, string apiKey, HttpMessageHandler httpMessageHandler)
 		{
-			_apiClient = RestService.For<IRedmineApiClient>(baseUri);
+			_apiClient = RestService.For<IRedmineApiClient>(baseUri,
+				new RefitSettings {HttpMessageHandlerFactory = () => httpMessageHandler});
 			ApiKey = apiKey;
 		}
 
-		public class TicketGetEnumerator : IEnumerator<TicketGet>
+		public class PaginatedEnumerator<T> : IAsyncEnumerator<T>
 		{
-			private readonly List<TicketGet> _tickets;
+			private Func<int, int, Task<IPaginated<T>>> _getPaginatedFunc;
+			private int _offset;
+			private int? _total;
+			private readonly List<T> _tickets;
+			private int _index;
+			private int _limit;
 
-			public TicketGetEnumerator()
+			public PaginatedEnumerator(Func<int, int, Task<IPaginated<T>>> getPaginatedFunc, int offset, int limit)
 			{
-				_tickets = new List<TicketGet>();
+				_getPaginatedFunc = getPaginatedFunc;
+				_offset = offset;
+				_limit = limit;
+				_tickets = new List<T>();
+				_index = 0;
 			}
 
-			public bool MoveNext()
+			public async Task<bool> MoveNext()
 			{
-				throw new NotImplementedException();
+				if (_index < _tickets.Count)
+				{
+					Current = _tickets[_index++];
+					return true;
+				}
+
+				if (!_total.HasValue || _offset < _total)
+				{
+					var response = await _getPaginatedFunc(_offset, _limit);
+
+					_tickets.AddRange(response.Data);
+
+					_offset += response.Data.Length;
+
+					_total = (int)response.TotalCount;
+					_limit = (int)response.Limit;
+
+					Current = _tickets[_index++];
+					return true;
+				}
+
+				return false;
 			}
 
-			public void Reset()
-			{
-				throw new NotImplementedException();
-			}
-
-			public TicketGet Current { get; }
-
-			object IEnumerator.Current => Current;
+			public T Current { get; private set; }
 
 			public void Dispose()
 			{
-				throw new NotImplementedException();
+				_index = 0;
+				_getPaginatedFunc = null;
+				_offset = 0;
 			}
 		}
 
-		public class TicketGetEnumerable : IEnumerable<TicketGet>
+		public class PaginatedEnumerable<T> : IAsyncEnumerable<T>
 		{
-			public IEnumerator<TicketGet> GetEnumerator()
+			public const int DefaultLimit = 100;
+
+			private readonly Func<int, int, Task<IPaginated<T>>> _getPaginatedFunc;
+			private readonly int _offset;
+			private readonly int _limit;
+
+			public PaginatedEnumerable(Func<int, int, Task<IPaginated<T>>> getPaginatedFunc, int offset = 0, int limit = DefaultLimit)
 			{
-				throw new NotImplementedException();
+				_getPaginatedFunc = getPaginatedFunc;
+				_offset = offset;
+				_limit = limit;
 			}
 
-			IEnumerator IEnumerable.GetEnumerator()
+			public IAsyncEnumerator<T> GetEnumerator()
 			{
-				return GetEnumerator();
+				return new PaginatedEnumerator<T>(_getPaginatedFunc, _offset, _limit);
 			}
 		}
 
-		public IEnumerable<TicketGet> EnumerateTickets(IdsFilter statusIds = null, IdsFilter trackerIds = null, 
-			DateTime? updatedAtFrom = null,
-			DateTime? updatedAtTo = null)
+		public IAsyncEnumerable<Membership> EnumerateMembershipsAsync(int projectId)
 		{
+			async Task<IPaginated<Membership>> GetPaginated(int offset, int limit)
+			{
+				return await _apiClient.GetMembershipsAsync(ApiKey, projectId, offset, limit);
+			}
 
+			return new PaginatedEnumerable<Membership>(GetPaginated);
+		}
+
+		public IAsyncEnumerable<Ticket> EnumerateTicketsAsync(IdsFilter statusIds = null, IdsFilter trackerIds = null, 
+			string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null)
+		{
+			var subjectEncoded = HttpUtility.UrlEncode(subject);
+
+			async Task<IPaginated<Ticket>> GetTicketsPaginated(int offset, int limit)
+			{
+				return await _apiClient.GetTicketsAsync(ApiKey, statusIds?.ToString(),
+					trackerIds?.ToString(), subjectEncoded, updatedOnFrom, updatedOnTo, offset, limit);
+			}
+
+			return new PaginatedEnumerable<Ticket>(GetTicketsPaginated);
+		}
+
+		public Task CreateTicketAsync(TicketUpdate ticketUpdate)
+		{
+			var request = new TicketUpdateRequest {Data = ticketUpdate};
+			return _apiClient.CreateTicketAsync(ApiKey, request);
+		}
+
+		public Task UpdateTicketAsync(TicketUpdate ticketUpdate)
+		{
+			var request = new TicketUpdateRequest { Data = ticketUpdate };
+			return _apiClient.UpdateTicketAsync(ApiKey, request);
 		}
 	}
 }

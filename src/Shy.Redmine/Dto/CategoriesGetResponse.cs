@@ -2,10 +2,10 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class CategoriesGetDto
+    public class CategoriesGetResponse
     {
         [JsonProperty("issue_categories")]
-        public IdName[] Categories { get; set; }
+        public IdName[] Data { get; set; }
 
         [JsonProperty("total_count")]
         public long TotalCount { get; set; }

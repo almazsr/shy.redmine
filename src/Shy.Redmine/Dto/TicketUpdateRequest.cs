@@ -2,9 +2,9 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketUpdateDto
+	public class TicketUpdateRequest
 	{
 		[JsonProperty("issue")]
-		public TicketUpdate Ticket { get; set; }
+		public TicketUpdate Data { get; set; }
 	}
 }

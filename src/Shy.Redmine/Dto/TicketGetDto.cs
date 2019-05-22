@@ -2,9 +2,9 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketGetDto
+	public class TicketGetResponse
 	{
 		[JsonProperty("issue")]
-		public TicketGet Ticket { get; set; }
+		public Ticket Ticket { get; set; }
 	}
 }

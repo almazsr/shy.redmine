@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Runtime.Serialization;
 using Newtonsoft.Json;
 
 namespace Shy.Redmine.Dto
@@ -11,7 +12,8 @@ namespace Shy.Redmine.Dto
 		[JsonProperty("description")]
 		public string Description { get; set; }
 
-		[JsonProperty("due_date")]
+		[JsonProperty("due_date", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset? DueDate { get; set; }
 
 		[JsonProperty("done_ratio")]

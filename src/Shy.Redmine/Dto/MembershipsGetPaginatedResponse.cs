@@ -2,11 +2,8 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class MembershipsGetPaginatedDto
+    public class MembershipsGetPaginatedResponse : IPaginated<Membership>
 	{
-        [JsonProperty("memberships")]
-        public Membership[] Memberships { get; set; }
-
         [JsonProperty("total_count")]
         public long TotalCount { get; set; }
 
@@ -15,5 +12,8 @@ namespace Shy.Redmine.Dto
 
         [JsonProperty("limit")]
         public long Limit { get; set; }
-    }
+
+		[JsonProperty("memberships")]
+		public Membership[] Data { get; set; }
+	}
 }

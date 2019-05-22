@@ -2,7 +2,7 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class RelationsGetDto
+	public class RelationsGetResponse
 	{
 		[JsonProperty("relations")]
 		public Relation[] Relations { get; set; }
