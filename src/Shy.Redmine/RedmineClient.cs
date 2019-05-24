@@ -22,7 +22,7 @@ namespace Shy.Redmine
 			ApiKey = apiKey;
 		}
 
-		public class PaginatedEnumerator<T> : IAsyncEnumerator<T>
+		private class PaginatedEnumerator<T> : IAsyncEnumerator<T>
 		{
 			private Func<int, int, Task<IPaginated<T>>> _getPaginatedFunc;
 			private int _offset;
@@ -76,7 +76,7 @@ namespace Shy.Redmine
 			}
 		}
 
-		public class PaginatedEnumerable<T> : IAsyncEnumerable<T>
+		private class PaginatedEnumerable<T> : IAsyncEnumerable<T>
 		{
 			public const int DefaultLimit = 100;
 
@@ -131,6 +131,16 @@ namespace Shy.Redmine
 		{
 			var request = new TicketUpdateRequest { Data = ticketUpdate };
 			return _apiClient.UpdateTicketAsync(ApiKey, request);
+		}
+
+		public Task DeleteTicketAsync(int ticketId)
+		{
+			return _apiClient.DeleteTicketAsync(ApiKey, id);
+		}
+
+		public Task<RelationsGetResponse> GetRelationsAsync(int ticketId)
+		{
+
 		}
 	}
 }
