@@ -22,108 +22,47 @@ namespace Shy.Redmine
 			ApiKey = apiKey;
 		}
 
-		private class PaginatedEnumerator<T> : IAsyncEnumerator<T>
+		private async Task<IList<T>> GetPaginatedAllAsync<T>(Func<int, int, Task<IPaginated<T>>> getPaginatedFunc, int initialOffset = 0, int count = int.MaxValue)
 		{
-			private Func<int, int, Task<IPaginated<T>>> _getPaginatedFunc;
-			private int _offset;
-			private int? _total;
-			private readonly List<T> _tickets;
-			private int _index;
-			private int _limit;
+			var result = new List<T>();
 
-			public PaginatedEnumerator(Func<int, int, Task<IPaginated<T>>> getPaginatedFunc, int offset, int limit)
+			var totalCount = long.MaxValue;
+			var offset = initialOffset;
+
+			while (result.Count < Math.Min(count, totalCount - initialOffset))
 			{
-				_getPaginatedFunc = getPaginatedFunc;
-				_offset = offset;
-				_limit = limit;
-				_tickets = new List<T>();
-				_index = 0;
+				var response = await getPaginatedFunc(offset, count);
+				offset += response.Data.Length;
+				result.AddRange(response.Data);
+				totalCount = response.TotalCount;
 			}
 
-			public async Task<bool> MoveNext()
-			{
-				if (_index < _tickets.Count)
-				{
-					Current = _tickets[_index++];
-					return true;
-				}
-
-				if (!_total.HasValue || _offset < _total)
-				{
-					var response = await _getPaginatedFunc(_offset, _limit);
-
-					_tickets.AddRange(response.Data);
-
-					_offset += response.Data.Length;
-
-					_total = (int)response.TotalCount;
-					_limit = (int)response.Limit;
-
-					Current = _tickets[_index++];
-					return true;
-				}
-
-				return false;
-			}
-
-			public T Current { get; private set; }
-
-			public void Dispose()
-			{
-				_index = 0;
-				_getPaginatedFunc = null;
-				_offset = 0;
-			}
+			return result;
 		}
 
-		private class PaginatedEnumerable<T> : IAsyncEnumerable<T>
+		public Task<IList<Membership>> GetAllMembershipsAsync(int projectId, int offset = 0,
+			int count = int.MaxValue)
 		{
-			public const int DefaultLimit = 100;
-
-			private readonly Func<int, int, Task<IPaginated<T>>> _getPaginatedFunc;
-			private readonly int _offset;
-			private readonly int _limit;
-
-			public PaginatedEnumerable(Func<int, int, Task<IPaginated<T>>> getPaginatedFunc, int offset = 0, int limit = DefaultLimit)
-			{
-				_getPaginatedFunc = getPaginatedFunc;
-				_offset = offset;
-				_limit = limit;
-			}
-
-			public IAsyncEnumerator<T> GetEnumerator()
-			{
-				return new PaginatedEnumerator<T>(_getPaginatedFunc, _offset, _limit);
-			}
+			return GetPaginatedAllAsync<Membership>(
+				async (o, l) => await _apiClient.GetMembershipsAsync(ApiKey, projectId, o, l), offset,
+				count);
 		}
 
-		public IAsyncEnumerable<Membership> EnumerateMembershipsAsync(int projectId)
-		{
-			async Task<IPaginated<Membership>> GetPaginated(int offset, int limit)
-			{
-				return await _apiClient.GetMembershipsAsync(ApiKey, projectId, offset, limit);
-			}
-
-			return new PaginatedEnumerable<Membership>(GetPaginated);
-		}
-
-		public IAsyncEnumerable<Ticket> EnumerateTicketsAsync(IdsFilter statusIds = null, IdsFilter trackerIds = null, 
-			string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null)
+		public Task<IList<Ticket>> GetAllTicketsAsync(IdsFilter statusIds = null, IdsFilter trackerIds = null, 
+			string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null, int offset = 0, int count = int.MaxValue)
 		{
 			var subjectEncoded = HttpUtility.UrlEncode(subject);
 
-			async Task<IPaginated<Ticket>> GetTicketsPaginated(int offset, int limit)
-			{
-				return await _apiClient.GetTicketsAsync(ApiKey, statusIds?.ToString(),
-					trackerIds?.ToString(), subjectEncoded, updatedOnFrom, updatedOnTo, offset, limit);
-			}
-
-			return new PaginatedEnumerable<Ticket>(GetTicketsPaginated);
+			return GetPaginatedAllAsync<Ticket>(
+				async (o, l) => await _apiClient.GetTicketsAsync(ApiKey, statusIds?.ToString(),
+					trackerIds?.ToString(), subjectEncoded, updatedOnFrom, updatedOnTo, o, l), offset,
+				count);
 		}
 
-		public async Task GetTicketAsync(int id)
+		public async Task<Ticket> GetTicketAsync(int id)
 		{
 			var response = await _apiClient.GetTicketAsync(ApiKey, id);
+			return response.Data;
 		}
 
 		public Task CreateTicketAsync(TicketUpdate ticket)
@@ -157,13 +96,19 @@ namespace Shy.Redmine
 
 		public Task DeleteRelationAsync(int id)
 		{
-			return _apiClient.DeleteRelation(ApiKey, id);
+			return _apiClient.DeleteRelationAsync(ApiKey, id);
 		}
 
 		public async Task<Relation> GetRelationAsync(int id)
 		{
 			var response = await _apiClient.GetRelationAsync(ApiKey, id);
-			return response.Relation;
+			return response.Data;
+		}
+
+		public async Task<Project[]> GetProjectsAsync()
+		{
+			var response = await _apiClient.GetProjectsAsync(ApiKey);
+			return response.Data;
 		}
 	}
 }

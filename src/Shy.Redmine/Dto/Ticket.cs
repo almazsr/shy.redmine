@@ -45,7 +45,8 @@ namespace Shy.Redmine.Dto
 		[JsonProperty("description")]
 		public string Description { get; set; }
 
-		[JsonProperty("due_date")]
+		[JsonProperty("due_date", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset DueDate { get; set; }
 
 		[JsonProperty("done_ratio")]
@@ -54,10 +55,12 @@ namespace Shy.Redmine.Dto
 		[JsonProperty("custom_fields")]
 		public CustomField[] CustomFields { get; set; }
 
-        [JsonProperty("created_on")]
+        [JsonProperty("created_on", NullValueHandling = NullValueHandling.Ignore)]
+        [JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset CreatedOn { get; set; }
 
-		[JsonProperty("updated_on")]
+		[JsonProperty("updated_on", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset UpdatedOn { get; set; }
 
 		[JsonProperty("children")]
