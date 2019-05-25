@@ -18,6 +18,6 @@ namespace Shy.Redmine.Dto
         public DateTimeOffset CreatedOn { get; set; }
 
         [JsonProperty("details")]
-        public Detail[] Details { get; set; }
+        public JournalDetail[] Details { get; set; }
     }
 }

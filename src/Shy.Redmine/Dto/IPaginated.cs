@@ -7,5 +7,10 @@
 		long Offset { get; set; }
 
 		long Limit { get; set; }
-	}
+    }
+
+    public interface IPaginated<T> : IPaginated
+    {
+        T[] Data { get; set; }
+    }
 }

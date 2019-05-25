@@ -2,7 +2,7 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class Detail
+    public class JournalDetail
     {
         [JsonProperty("property")]
         public string Property { get; set; }

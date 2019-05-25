@@ -2,17 +2,12 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class IdName
-    {
-        [JsonProperty("id")]
-        public long Id { get; set; }
+	public class IdName
+	{
+		[JsonProperty("id")]
+		public long Id { get; set; }
 
-        [JsonProperty("name")]
-        public string Name { get; set; }
-
-        public override string ToString()
-        {
-            return $"{Name}";
-        }
-    }
+		[JsonProperty("name")]
+		public string Name { get; set; }
+	}
 }

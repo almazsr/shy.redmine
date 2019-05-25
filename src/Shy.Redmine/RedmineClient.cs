@@ -121,26 +121,49 @@ namespace Shy.Redmine
 			return new PaginatedEnumerable<Ticket>(GetTicketsPaginated);
 		}
 
-		public Task CreateTicketAsync(TicketUpdate ticketUpdate)
+		public async Task GetTicketAsync(int id)
 		{
-			var request = new TicketUpdateRequest {Data = ticketUpdate};
+			var response = await _apiClient.GetTicketAsync(ApiKey, id);
+		}
+
+		public Task CreateTicketAsync(TicketUpdate ticket)
+		{
+			var request = new TicketUpdateRequest {Data = ticket};
 			return _apiClient.CreateTicketAsync(ApiKey, request);
 		}
 
-		public Task UpdateTicketAsync(TicketUpdate ticketUpdate)
+		public Task UpdateTicketAsync(TicketUpdate ticket)
 		{
-			var request = new TicketUpdateRequest { Data = ticketUpdate };
+			var request = new TicketUpdateRequest { Data = ticket };
 			return _apiClient.UpdateTicketAsync(ApiKey, request);
 		}
 
 		public Task DeleteTicketAsync(int ticketId)
 		{
-			return _apiClient.DeleteTicketAsync(ApiKey, id);
+			return _apiClient.DeleteTicketAsync(ApiKey, ticketId);
 		}
 
-		public Task<RelationsGetResponse> GetRelationsAsync(int ticketId)
+		public async Task<Relation[]> GetTicketRelationsAsync(int ticketId)
 		{
+			var response = await _apiClient.GetTicketRelationsAsync(ApiKey, ticketId);
+			return response.Relations;
+		}
 
+		public Task CreateRelationAsync(RelationCreate relation)
+		{
+			var request = new RelationCreateRequest {Data = relation};
+			return _apiClient.CreateRelationAsync(ApiKey, request);
+		}
+
+		public Task DeleteRelationAsync(int id)
+		{
+			return _apiClient.DeleteRelation(ApiKey, id);
+		}
+
+		public async Task<Relation> GetRelationAsync(int id)
+		{
+			var response = await _apiClient.GetRelationAsync(ApiKey, id);
+			return response.Relation;
 		}
 	}
 }
