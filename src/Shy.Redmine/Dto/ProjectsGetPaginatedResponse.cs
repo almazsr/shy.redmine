@@ -2,6 +2,12 @@
 
 namespace Shy.Redmine.Dto
 {
+	public class ProjectGetResponse
+	{
+		[JsonProperty("project")]
+		public Project Data { get; set; }
+	}
+
 	public class ProjectsGetPaginatedResponse : IPaginated<Project>
 	{
 		[JsonProperty("projects")]

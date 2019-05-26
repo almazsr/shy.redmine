@@ -2,25 +2,37 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class IdsFilter
-    {
-        public long[] Ids { get; }
+	public class MultipleValueFilter
+	{
+		public string Delimiter { get; }
+		public object[] Values { get; }
 
-        public IdsFilter(params long[] ids)
-        {
-            Ids = ids;
-        }
+		public MultipleValueFilter(string delimiter, params object[] values)
+		{
+			Delimiter = delimiter;
+			Values = values;
+		}
 
-        public bool Contains(long id) => Ids.Contains(id);
-        public bool Contains(string id) => Ids.Select(i=>i.ToString()).Contains(id);
+		public override string ToString()
+		{
+			if(Values?.Length == 0)
+			{
+				return string.Empty;
+			}
+			return string.Join(Delimiter, Values);
+		}
+	}
 
-        public override string ToString()
-        {
-            if (Ids?.Length == 0)
-            {
-                return string.Empty;
-            }
-            return string.Join("|", Ids);
-        }
-    }
+	public class IdsFilter : MultipleValueFilter
+	{
+		public IdsFilter(params object[] values) : base("|", values)
+		{
+		}
+	}
+	public class IncludeFilter : MultipleValueFilter
+	{
+		public IncludeFilter(params object[] values) : base(",", values)
+		{
+		}
+	}
 }
