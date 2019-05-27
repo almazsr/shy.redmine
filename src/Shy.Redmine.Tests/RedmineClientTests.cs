@@ -1,9 +1,6 @@
-using System;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
-using AsyncEnumerable;
+using Refit;
 using Shy.Redmine.Dto;
 using Xunit;
 
@@ -13,31 +10,39 @@ namespace Shy.Redmine.Tests
 
 	public class RedmineClientTests
 	{
-		private HttpClientHandler _httpClientHandler;
+		private readonly IRedmineApiClient _apiClient;
 
 		public RedmineClientTests()
 		{
-			_httpClientHandler = new HttpClientHandler
+			var httpClientHandler = new RedmineHttpClientHandler
 			{
+				ApiKey = ApiKey,
 				ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
 			};
+			var httpClient = new HttpClient(httpClientHandler)
+			{
+				BaseAddress = BaseUri
+			};
+			_apiClient = RestService.For<IRedmineApiClient>(httpClient);
 		}
 
 		[Theory]
 		[InlineData(0), InlineData(25), InlineData(100), InlineData(200)]
 		public async Task GetAllTickets_CallWithCountIsN_ReturnsNTickets(int count)
 		{
-			var redmineClient = new RedmineClient(BaseUri, ApiKey, _httpClientHandler);
-			var tickets = await redmineClient.GetAllTicketsAsync(count: count);
+			var tickets = await _apiClient.GetAllTicketsAsync(count: count);
 			Assert.Equal(count, tickets.Count);
 		}
 
 		[Fact]
 		public async Task GetAllTickets_CallWithSomeParameters_ReturnsSomeTickets()
 		{
-			var redmineClient = new RedmineClient(BaseUri, ApiKey, _httpClientHandler);
-			var tickets = await redmineClient.GetAllTicketsAsync(new IdsFilter(9), new IdsFilter(5));
-			Assert.True(tickets.Count > 0);
+			var tickets = await _apiClient.GetTicketsAsync(new long[] {6, 8}, include: new[]
+			{
+				TicketInclude.Relations, TicketInclude.Children
+			});
+
+			Assert.True(tickets.Data.Length > 0);
 		}
 
 
@@ -45,17 +50,14 @@ namespace Shy.Redmine.Tests
 		[InlineData(10000), InlineData(1000), InlineData(20000)]
 		public async Task GetTicket_CallWithN_ReturnsTicketWithIdN(int id)
 		{
-			var redmineClient = new RedmineClient(BaseUri, ApiKey, _httpClientHandler);
-			var ticket = await redmineClient.GetTicketAsync(id);
-			Assert.Equal(id, ticket.Id);
+			var response = await _apiClient.GetTicketAsync(id);
+			Assert.Equal(id, response.Data.Id);
 		}
 
 		[Fact]
 		public async Task GetProjects_Call_ReturnsSomeProjects()
 		{
-			var redmineClient = new RedmineClient(BaseUri, ApiKey, _httpClientHandler);
-			var projects = await redmineClient.GetProjectsAsync();
-			Assert.True(projects.Length > 0);
+
 		}
 	}
 }

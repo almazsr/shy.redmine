@@ -2,9 +2,9 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class RelationsGetResponse
+	public class RelationsGetResponse : IRedmineResponse<Relation[]>
 	{
 		[JsonProperty("relations")]
-		public Relation[] Relations { get; set; }
+		public Relation[] Data { get; set; }
 	}
 }

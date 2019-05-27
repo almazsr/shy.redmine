@@ -2,7 +2,7 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class VersionsGetResponse
+	public class VersionsGetResponse : IRedmineResponse<Version[]>
 	{
 		[JsonProperty("versions")]
 		public Version[] Data { get; set; }

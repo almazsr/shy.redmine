@@ -2,7 +2,7 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketsGetPaginatedResponse : IPaginated<Ticket>
+	public class TicketsGetPaginatedResponse : IRedminePaginatedResponse<Ticket>
 	{
 		[JsonProperty("issues")]
 		public Ticket[] Data { get; set; }

@@ -2,7 +2,7 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class GetRolesResponse
+	public class GetRolesResponse : IRedmineResponse<Role[]>
 	{
 		[JsonProperty("roles")]
 		public Role[] Data { get; set; }
