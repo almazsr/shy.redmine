@@ -14,9 +14,8 @@ namespace Shy.Redmine.Tests
 
 		public RedmineClientTests()
 		{
-			var httpClientHandler = new RedmineHttpClientHandler
+			var httpClientHandler = new RedmineHttpClientHandler(ApiKey)
 			{
-				ApiKey = ApiKey,
 				ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
 			};
 			var httpClient = new HttpClient(httpClientHandler)
@@ -45,19 +44,12 @@ namespace Shy.Redmine.Tests
 			Assert.True(tickets.Data.Length > 0);
 		}
 
-
 		[Theory]
 		[InlineData(10000), InlineData(1000), InlineData(20000)]
 		public async Task GetTicket_CallWithN_ReturnsTicketWithIdN(int id)
 		{
 			var response = await _apiClient.GetTicketAsync(id);
 			Assert.Equal(id, response.Data.Id);
-		}
-
-		[Fact]
-		public async Task GetProjects_Call_ReturnsSomeProjects()
-		{
-
 		}
 	}
 }

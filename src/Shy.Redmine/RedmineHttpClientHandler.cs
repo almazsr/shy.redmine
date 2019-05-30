@@ -8,7 +8,12 @@ namespace Shy.Redmine
 {
 	public class RedmineHttpClientHandler : HttpClientHandler
 	{
-		public string ApiKey { get; set; }
+		public RedmineHttpClientHandler(string apiKey)
+		{
+			ApiKey = apiKey;
+		}
+
+		public string ApiKey { get; }
 
 		private void InsertApiKey(HttpRequestMessage request)
 		{
