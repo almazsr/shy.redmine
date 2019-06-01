@@ -5,7 +5,7 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shy.Redmine", "Shy.Redmine\Shy.Redmine.csproj", "{CD442AC0-98A2-4442-AF1A-7753C765B21A}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Shy.Redmine.Tests", "Shy.Redmine.Tests\Shy.Redmine.Tests.csproj", "{9E604118-750B-46A5-A38B-BD2F088AC9D6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Shy.Redmine.Tests", "Shy.Redmine.Tests\Shy.Redmine.Tests.csproj", "{9E604118-750B-46A5-A38B-BD2F088AC9D6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

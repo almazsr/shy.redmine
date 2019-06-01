@@ -11,7 +11,7 @@ namespace Shy.Redmine.Dto
         public IdName Project { get; set; }
 
         [JsonProperty("user")]
-        public IdName User { get; set; }
+        public User User { get; set; }
 
         [JsonProperty("roles")]
         public Role[] Roles { get; set; }

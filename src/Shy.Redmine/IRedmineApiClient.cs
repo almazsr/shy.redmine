@@ -59,10 +59,10 @@ namespace Shy.Redmine
 		Task DeleteMembershipAsync(int id);
 
 		[Get("/issue_statuses.json")]
-		Task<TicketStatusesGetResponse> GetTicketStatusesAsync(string key);
+		Task<TicketStatusesGetResponse> GetTicketStatusesAsync();
 
 		[Get("/trackers.json")]
-		Task<TicketTypesGetResponse> GetTicketTypesAsync(string key);
+		Task<TicketTypesGetResponse> GetTicketTypesAsync();
 
 		[Get("/projects/{projectId}/issue_categories.json")]
 		Task<TicketCategoriesGetResponse> GetTicketCategoriesAsync(int projectId);

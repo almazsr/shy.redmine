@@ -2,10 +2,10 @@
 
 namespace Shy.Redmine.Dto
 {
-    public class TicketCategoriesGetResponse : IRedmineResponse<IdName[]>
+    public class TicketCategoriesGetResponse : IRedmineResponse<TicketCategory[]>
     {
         [JsonProperty("issue_categories")]
-        public IdName[] Data { get; set; }
+        public TicketCategory[] Data { get; set; }
 
         [JsonProperty("total_count")]
         public long TotalCount { get; set; }
