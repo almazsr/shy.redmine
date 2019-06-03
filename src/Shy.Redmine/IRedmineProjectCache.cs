@@ -5,8 +5,13 @@ namespace Shy.Redmine
 {
 	public interface IRedmineProjectCache
 	{
-		Task InitializeAsync();
-		TicketCategory[] Categories { get; }
+	    RedmineConfiguration Configuration { get; }
+
+	    Task ApplyConfigurationAsync(RedmineConfiguration configuration);
+        Task RefreshAsync();
+	    Task LoadAsync();
+
+        TicketCategory[] Categories { get; }
 		TicketType[] Types { get; }
 		TicketPriority[] Priorities { get; }
 		TicketStatus[] Statuses { get; }

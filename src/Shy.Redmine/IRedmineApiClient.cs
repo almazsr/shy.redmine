@@ -14,7 +14,7 @@ namespace Shy.Redmine
 			[AliasAs("updated_on"), Query(Format = "<={0:yyyy-MM-dd}")] DateTime? updatedOnTo = null, 
 		    [Query(CollectionFormat.Csv)] string[] include = null, int? offset = null, int? limit = null);
 		[Get("/issues/{id}.json")]
-		Task<TicketGetResponse> GetTicketAsync(int id, [Query(",")] string[] include = null);
+		Task<TicketGetResponse> GetTicketAsync(long id, [Query(",")] string[] include = null);
 		[Post("/issues.json")]
 		Task CreateTicketAsync([Body] TicketUpdateRequest request);
 		[Put("/issues.json")]
@@ -58,7 +58,10 @@ namespace Shy.Redmine
 		[Delete("/memberships/{id}.json")]
 		Task DeleteMembershipAsync(int id);
 
-		[Get("/issue_statuses.json")]
+	    [Get("/users/{id}.json")]
+	    Task<UserGetResponse> GetUserAsync(int id);
+
+        [Get("/issue_statuses.json")]
 		Task<TicketStatusesGetResponse> GetTicketStatusesAsync();
 
 		[Get("/trackers.json")]
