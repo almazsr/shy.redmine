@@ -2,9 +2,15 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketPriority : IdName
+	public class TicketPriority
 	{
-		[JsonProperty("is_default", NullValueHandling = NullValueHandling.Ignore)]
+	    [JsonProperty("id")]
+	    public long Id { get; set; }
+
+	    [JsonProperty("name")]
+	    public string Name { get; set; }
+
+        [JsonProperty("is_default", NullValueHandling = NullValueHandling.Ignore)]
 		public bool? IsDefault { get; set; }
 	}
 }

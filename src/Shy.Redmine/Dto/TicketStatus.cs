@@ -2,9 +2,15 @@
 
 namespace Shy.Redmine.Dto
 {
-	public class TicketStatus : IdName
+	public class TicketStatus
 	{
-		[JsonProperty("is_closed", NullValueHandling = NullValueHandling.Ignore)]
+	    [JsonProperty("id")]
+	    public long Id { get; set; }
+
+	    [JsonProperty("name")]
+	    public string Name { get; set; }
+
+        [JsonProperty("is_closed", NullValueHandling = NullValueHandling.Ignore)]
 		public bool? IsClosed { get; set; }
 	}
 }

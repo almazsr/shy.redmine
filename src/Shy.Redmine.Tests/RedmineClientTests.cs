@@ -1,6 +1,5 @@
 using System.Net.Http;
 using System.Threading.Tasks;
-using Refit;
 using Shy.Redmine.Dto;
 using Xunit;
 
@@ -10,33 +9,30 @@ namespace Shy.Redmine.Tests
 
 	public class RedmineClientTests
 	{
-		private readonly IRedmineApiClient _apiClient;
+	    private readonly IRedmineClient _client;
 
-		public RedmineClientTests()
-		{
-			var httpClientHandler = new RedmineHttpClientHandler(ApiKey)
-			{
-				ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
-			};
-			var httpClient = new HttpClient(httpClientHandler)
-			{
-				BaseAddress = BaseUri
-			};
-			_apiClient = RestService.For<IRedmineApiClient>(httpClient);
-		}
+	    public RedmineClientTests()
+	    {
+	        var httpClientHandler = new HttpClientHandler()
+	        {
+	            ServerCertificateCustomValidationCallback = (message, cert, chain, errors) => true
+	        };
+	        var httpClient = new HttpClient(httpClientHandler);
+	        _client = new RedmineClient(httpClient, BaseUri, ApiKey);
+	    }
 
-		[Theory]
+        [Theory]
 		[InlineData(0), InlineData(25), InlineData(100), InlineData(200)]
 		public async Task GetAllTickets_CallWithCountIsN_ReturnsNTickets(int count)
 		{
-			var tickets = await _apiClient.GetAllTicketsAsync(count: count);
+			var tickets = await _client.GetAllTicketsAsync(count: count);
 			Assert.Equal(count, tickets.Count);
 		}
 
 		[Fact]
 		public async Task GetAllTickets_CallWithSomeParameters_ReturnsSomeTickets()
 		{
-			var tickets = await _apiClient.GetTicketsAsync(new long[] {6, 8}, include: new[]
+			var tickets = await _client.GetTicketsAsync(new long[] {6, 8}, include: new[]
 			{
 				TicketInclude.Relations, TicketInclude.Children
 			});
@@ -48,8 +44,16 @@ namespace Shy.Redmine.Tests
 		[InlineData(10000), InlineData(1000), InlineData(20000)]
 		public async Task GetTicket_CallWithN_ReturnsTicketWithIdN(int id)
 		{
-			var response = await _apiClient.GetTicketAsync(id);
+			var response = await _client.GetTicketAsync(id);
 			Assert.Equal(id, response.Data.Id);
-		}
-	}
+	    }
+
+	    [Theory]
+	    [InlineData(10000), InlineData(1000), InlineData(20000)]
+	    public void GetTicket_CallWithNAndInclude_ReturnsTicketWithIdN(int id)
+	    {
+	        var response = _client.GetTicketAsync(id, new [] {"journals"}).Result;
+	        Assert.Equal(id, response.Data.Id);
+	    }
+    }
 }

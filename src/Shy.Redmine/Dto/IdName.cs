@@ -5,7 +5,7 @@ namespace Shy.Redmine.Dto
 	public class IdName
 	{
 		[JsonProperty("id")]
-		public int Id { get; set; }
+		public long Id { get; set; }
 
 		[JsonProperty("name")]
 		public string Name { get; set; }
