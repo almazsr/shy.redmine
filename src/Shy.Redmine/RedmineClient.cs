@@ -38,7 +38,7 @@ namespace Shy.Redmine
             return HttpUtility.ParseQueryString(string.Empty);
         }
 
-        protected virtual async Task<TResponse> SendAsync<TResponse>(HttpMethod httpMethod, string path, NameValueCollection query = null, object request = null)
+        public virtual async Task<TResponse> SendAsync<TResponse>(HttpMethod httpMethod, string path, NameValueCollection query = null, object request = null)
         {
             var uri = new Uri(BaseUri, path);
             var uriBuilder = new UriBuilder(uri);
@@ -86,9 +86,8 @@ namespace Shy.Redmine
             {
                 updatedOn = $"<={updatedOnTo:yyyy-MM-dd}";
             }
-
             var query = CreateQuery()
-                .WithParamArray("issue_id", ids, Pipe)
+                .WithParamArray("issue_id", ids, Comma)
                 .WithParamArray("status_id", statusIds, Pipe)
                 .WithParamArray("tracker_id", trackerIds, Pipe)
                 .WithParamArray("assigned_to_id", assignedToIds, Pipe)
@@ -97,7 +96,7 @@ namespace Shy.Redmine
                 .WithParamArray("include", include, Comma)
                 .WithParam("offset", offset)
                 .WithParam("limit", limit);
-
+            
             return SendAsync<TicketsGetPaginatedResponse>(HttpMethod.Get, "issues.json", query);
         }
 
