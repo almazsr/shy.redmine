@@ -22,7 +22,7 @@ namespace Shy.Redmine
 				count);
 		}
 
-		public static Task<IList<Membership>> GetAllMembershipsAsync(this IRedmineClient apiClient, long projectId, int offset = 0,
+		public static Task<IList<Membership>> GetAllMembershipsAsync(this IRedmineClient apiClient, int projectId, int offset = 0,
 			int count = int.MaxValue)
 		{
 			return RedminePaginationHelper.GetAllAsync<Membership>(

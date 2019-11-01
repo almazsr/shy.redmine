@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
 using System.Net.Http;
@@ -57,14 +58,18 @@ namespace Shy.Redmine
 
             Trace.TraceInformation($"Response {responseMessage.StatusCode} received for {uri}");
 
-            responseMessage.EnsureSuccessStatusCode();
+            var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+
+            if (!responseMessage.IsSuccessStatusCode)
+            {
+                throw new InvalidOperationException(responseJson);
+            }
 
             if (typeof(TResponse) == typeof(Nothing))
             {
                 return default(TResponse);
             }
-
-            var responseJson = await responseMessage.Content.ReadAsStringAsync().ConfigureAwait(false);
+            
             return JsonConvert.DeserializeObject<TResponse>(responseJson);
         }
 
@@ -113,12 +118,12 @@ namespace Shy.Redmine
             return SendAsync<TicketGetResponse>(HttpMethod.Post, "issues.json", request: request);
         }
 
-        public Task UpdateTicketAsync(TicketUpdateRequest request)
+        public Task UpdateTicketAsync(long id, TicketUpdateRequest request)
         {
-            return SendAsync<Nothing>(HttpMethod.Put, "issues.json", request: request);
+            return SendAsync<Nothing>(HttpMethod.Put, $"issues/{id}.json", request: request);
         }
 
-        public Task DeleteTicketAsync(int id)
+        public Task DeleteTicketAsync(long id)
         {
             return SendAsync<Nothing>(HttpMethod.Delete, $"issues/{id}.json");
         }
@@ -153,22 +158,22 @@ namespace Shy.Redmine
             return SendAsync<VersionsGetResponse>(HttpMethod.Get, $"projects/{projectId}/versions.json");
         }
 
-        public Task AddTicketWatcherAsync(int ticketId, WatcherAddRequest request)
+        public Task AddTicketWatcherAsync(long ticketId, WatcherAddRequest request)
         {
             return SendAsync<Nothing>(HttpMethod.Post, $"issues/{ticketId}/watchers.json", request: request);
         }
 
-        public Task RemoveTicketWatcherAsync(int ticketId, int watcherId)
+        public Task RemoveTicketWatcherAsync(long ticketId, long watcherId)
         {
             return SendAsync<Nothing>(HttpMethod.Delete, $"issues/{ticketId}/watchers/{watcherId}.json");
         }
         
-        public Task<RelationsGetResponse> GetTicketRelationsAsync(int ticketId)
+        public Task<RelationsGetResponse> GetTicketRelationsAsync(long ticketId)
         {
             return SendAsync<RelationsGetResponse>(HttpMethod.Get, $"issues/{ticketId}/relations.json");
         }
 
-        public Task<RelationGetResponse> GetRelationAsync(int id)
+        public Task<RelationGetResponse> GetRelationAsync(long id)
         {
             return SendAsync<RelationGetResponse>(HttpMethod.Get, $"relations/{id}.json");
         }
@@ -178,7 +183,7 @@ namespace Shy.Redmine
             return SendAsync<Nothing>(HttpMethod.Post, "relations.json", request: request);
         }
 
-        public Task DeleteRelationAsync(int id)
+        public Task DeleteRelationAsync(long id)
         {
             return SendAsync<Nothing>(HttpMethod.Delete, $"relations/{id}.json");
         }
@@ -202,12 +207,12 @@ namespace Shy.Redmine
             return SendAsync<Nothing>(HttpMethod.Post, "projects.json", request: request);
         }
 
-        public Task UpdateProjectAsync(ProjectUpdateRequest request)
+        public Task UpdateProjectAsync(long id, ProjectUpdateRequest request)
         {
-            return SendAsync<Nothing>(HttpMethod.Put, "projects.json", request: request);
+            return SendAsync<Nothing>(HttpMethod.Put, $"projects/{id}.json", request: request);
         }
         
-        public Task DeleteProjectAsync(int id)
+        public Task DeleteProjectAsync(long id)
         {
             return SendAsync<Nothing>(HttpMethod.Delete, $"projects/{id}.json");
         }
@@ -221,22 +226,22 @@ namespace Shy.Redmine
             return SendAsync<MembershipsGetPaginatedResponse>(HttpMethod.Get, $"projects/{projectId}/memberships.json", query);
         }
 
-        public Task<MembershipGetResponse> GetMembershipAsync(int id)
+        public Task<MembershipGetResponse> GetMembershipAsync(long id)
         {
             return SendAsync<MembershipGetResponse>(HttpMethod.Get, $"memberships/{id}.json");
         }
 
-        public Task CreateProjectMembershipAsync(int projectId, MembershipCreateRequest request)
+        public Task CreateProjectMembershipAsync(long projectId, MembershipCreateRequest request)
         {
             return SendAsync<Nothing>(HttpMethod.Post, $"projects/{projectId}/memberships.json", request: request);
         }
 
-        public Task UpdateMembershipAsync(int id, MembershipUpdateRequest request)
+        public Task UpdateMembershipAsync(long id, MembershipUpdateRequest request)
         {
             return SendAsync<Nothing>(HttpMethod.Put, $"memberships/{id}.json", request: request);
         }
 
-        public Task DeleteMembershipAsync(int id)
+        public Task DeleteMembershipAsync(long id)
         {
             return SendAsync<Nothing>(HttpMethod.Delete, $"memberships/{id}.json");
         }
