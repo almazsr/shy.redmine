@@ -9,7 +9,7 @@ namespace Shy.Redmine
         Task AddTicketWatcherAsync(long ticketId, WatcherAddRequest request);
         Task CreateProjectAsync(ProjectUpdateRequest request);
         Task CreateProjectMembershipAsync(long projectId, MembershipCreateRequest request);
-        Task CreateRelationAsync(RelationCreateRequest request);
+        Task AddTicketRelationAsync(long ticketId, RelationCreateRequest request);
         Task CreateTicketAsync(TicketUpdateRequest request);
         Task DeleteMembershipAsync(long id);
         Task DeleteProjectAsync(long id);

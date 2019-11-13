@@ -178,9 +178,9 @@ namespace Shy.Redmine
             return SendAsync<RelationGetResponse>(HttpMethod.Get, $"relations/{id}.json");
         }
 
-        public Task CreateRelationAsync(RelationCreateRequest request)
+        public Task AddTicketRelationAsync(long ticketId, RelationCreateRequest request)
         {
-            return SendAsync<Nothing>(HttpMethod.Post, "relations.json", request: request);
+            return SendAsync<Nothing>(HttpMethod.Post, $"issues/{ticketId}/relations.json", request: request);
         }
 
         public Task DeleteRelationAsync(long id)
