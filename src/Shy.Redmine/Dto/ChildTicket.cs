@@ -12,5 +12,8 @@ namespace Shy.Redmine.Dto
 
 		[JsonProperty("subject")]
 		public string Subject { get; set; }
-	}
+
+        [JsonProperty("children")]
+        public ChildTicket[] Children { get; set; }
+    }
 }
