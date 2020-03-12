@@ -25,7 +25,7 @@ namespace Shy.Redmine
         Task<TicketCategoriesGetResponse> GetTicketCategoriesAsync(long projectId);
         Task<TicketPrioritiesGetResponse> GetTicketPrioritiesAsync();
         Task<RelationsGetResponse> GetTicketRelationsAsync(long ticketId);
-        Task<TicketsGetPaginatedResponse> GetTicketsAsync(long[] ids = null, long[] statusIds = null, long[] trackerIds = null, long[] assignedToIds = null, string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null, string[] include = null, int? offset = null, int? limit = null);
+        Task<TicketsGetPaginatedResponse> GetTicketsAsync(long[] ids = null, long[] statusIds = null, long[] trackerIds = null, object[] assignedToIds = null, string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null, string[] include = null, int? offset = null, int? limit = null);
         Task<TicketStatusesGetResponse> GetTicketStatusesAsync();
         Task<TicketTypesGetResponse> GetTicketTypesAsync();
         Task<UserGetResponse> GetUserAsync(long id);

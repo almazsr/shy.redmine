@@ -13,7 +13,7 @@ namespace Shy.Redmine
 				count);
 		}
 
-		public static Task<IList<Ticket>> GetAllTicketsAsync(this IRedmineClient apiClient, long[] ids = null, long[] statusIds = null, long[] trackerIds = null, long[] assignedToIds = null,
+		public static Task<IList<Ticket>> GetAllTicketsAsync(this IRedmineClient apiClient, long[] ids = null, long[] statusIds = null, long[] trackerIds = null, object[] assignedToIds = null,
 			string subject = null, DateTime? updatedOnFrom = null, DateTime? updatedOnTo = null, string[] include = null, int offset = 0, int count = int.MaxValue)
 		{
             return RedminePaginationHelper.GetAllAsync<Ticket>(

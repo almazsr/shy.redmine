@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
@@ -74,7 +75,7 @@ namespace Shy.Redmine
         }
 
         public Task<TicketsGetPaginatedResponse> GetTicketsAsync(long[] ids = null, long[] statusIds = null, long[] trackerIds = null,
-            long[] assignedToIds = null, string subject = null, DateTime? updatedOnFrom = null,
+            object[] assignedToIds = null, string subject = null, DateTime? updatedOnFrom = null,
             DateTime? updatedOnTo = null, string[] include = null, int? offset = null, int? limit = null)
         {
             string updatedOn = null;
@@ -95,7 +96,7 @@ namespace Shy.Redmine
                 .WithParamArray("issue_id", ids, Comma)
                 .WithParamArray("status_id", statusIds, Pipe)
                 .WithParamArray("tracker_id", trackerIds, Pipe)
-                .WithParamArray("assigned_to_id", assignedToIds, Pipe)
+                .WithParamArray("assigned_to_id", assignedToIds?.Select(i=>i?.ToString())?.ToArray(), Pipe)
                 .WithParam("subject", subject != null ? $"~{subject}" : null)
                 .WithParam("updated_on", updatedOn)
                 .WithParamArray("include", include, Comma)
