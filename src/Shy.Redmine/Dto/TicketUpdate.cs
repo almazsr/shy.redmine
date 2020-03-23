@@ -15,6 +15,10 @@ namespace Shy.Redmine.Dto
 		[JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset? DueDate { get; set; }
 
+		[JsonProperty("start_date", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonConverter(typeof(RedmineDateTimeConverter))]
+		public DateTimeOffset? StartDate { get; set; }
+
 		[JsonProperty("done_ratio", NullValueHandling = NullValueHandling.Ignore)]
 		public long? DoneRatio { get; set; }
 

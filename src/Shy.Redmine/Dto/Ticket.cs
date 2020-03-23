@@ -59,6 +59,10 @@ namespace Shy.Redmine.Dto
         [JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset CreatedOn { get; set; }
 
+		[JsonProperty("start_date", NullValueHandling = NullValueHandling.Ignore)]
+		[JsonConverter(typeof(RedmineDateTimeConverter))]
+		public DateTimeOffset? StartDate { get; set; }
+
 		[JsonProperty("updated_on", NullValueHandling = NullValueHandling.Ignore)]
 		[JsonConverter(typeof(RedmineDateTimeConverter))]
 		public DateTimeOffset UpdatedOn { get; set; }
